@@ -13,7 +13,7 @@ const progressMssgs = document.querySelectorAll('.progress')
 const catTasksContainer = document.querySelector('.list-categorized-tasks')
 const tasksTitle = document.querySelector('.tasks-title')
 
-// add new category
+let CATEGORIZED_LIST = []
 
 form.addEventListener('submit', function(e) {
     e.preventDefault()
@@ -21,15 +21,52 @@ form.addEventListener('submit', function(e) {
     
 })
 
+// add new to Dos
 function addNewTodos() {
     if(input.value.trim() == 0) return;
         
     if(form.dataset.list == 'categorized')  {
         addNewCategory()
     }
+
+    clearInput()
 }
 
 function addNewCategory() {
     const li = document.createElement('li')
     list_CATEGORIZED.appendChild(li)
+    li.classList.add('list__item')
+    li.innerHTML = `
+                        <div class="radio-btn"></div>
+                            <p>${input.value}</p>
+                            <div class="trash-icon">
+                                ${trashIcon}
+                            </div>
+                        <p class="tasks-completed">${0} tasks</p>
+                    `;
+    const trashIconBtn = li.querySelector('.trash-icon')
+    trashIconBtn.addEventListener('click', function(){ deleteRow(li, id) })
+
+    const id = 'li_' + Date.now()
+    CATEGORIZED_LIST.push(
+        {
+            id,
+            category: input.value,
+            completed: false,
+            tasks: []
+        }
+    )
+    // localStorage.setItem('categorized-list', JSON.stringify(CATEGORIZED_LIST))
+}
+
+// delete row
+function deleteRow(li, id) {
+    li.parentElement.removeChild(li)
+    CATEGORIZED_LIST = CATEGORIZED_LIST.filter(list => list.id != id)
+    // localStorage.setItem('categorized-list', JSON.stringify(CATEGORIZED_LIST))
+}
+
+// clear input 
+function clearInput() {
+    input.value = ''
 }
