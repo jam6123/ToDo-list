@@ -23,30 +23,30 @@ const CATEGORIZED_LIST_EXISTING_DATA = JSON.parse(localStorage.getItem('categori
 let CATEGORIZED_LIST = CATEGORIZED_LIST_EXISTING_DATA || []
 let completedCategory = localStorage.getItem('completed_category') || 0
 
-// read/load exsiting data
-function readExistingData() {
-    CATEGORIZED_LIST.forEach(category => {
-        const listItem = document.createElement('li')
-        listItem.classList.add('list__item')
-        listItem.id = category.id
-        categorizedList.appendChild(listItem)
-        listItem.innerHTML = `
-                                <div class="radio-btn ${category.completed ? 'ticked' : ''}"></div>
-                                <p>${category.category}</p>
-                                <div class="trash-icon">
-                                    ${trashIcon}
-                                </div>
-                            `;
-        radioBtnAddClickEvent(listItem, category.id)
-        trashIconBtnAddClickEvent(listItem, category.id)
-    })
+// READ/LOAD EXISTING DATA
+CATEGORIZED_LIST.forEach(category => {
+    const listItem = document.createElement('li')
+    listItem.classList.add('list__item')
+    listItem.id = category.id
+    categorizedList.appendChild(listItem)
+    listItem.innerHTML = `
+                            <div class="radio-btn ${category.completed ? 'ticked' : ''}"></div>
+                            <p>${category.category}</p>
+                            <div class="trash-icon">
+                                ${trashIcon}
+                            </div>
+                        `;
 
-    if(CATEGORIZED_LIST.length != 0) {
-        showCatListFooter() 
-    }
-    catListProgressMssg.innerText = `${completedCategory}/${CATEGORIZED_LIST.length} completed`
+    radioBtnAddClickEvent(listItem, category.id)
+    trashIconBtnAddClickEvent(listItem, category.id)
+})
+// READ/LOAD EXISTING DATA
+
+
+if(CATEGORIZED_LIST.length != 0) {
+    showCatListFooter() 
 }
-readExistingData()        
+catListProgressMssg.innerText = `${completedCategory}/${CATEGORIZED_LIST.length} completed`
 
 // add new To-Dos here
 function addNewToDo() {
@@ -176,9 +176,9 @@ function showCatListFooter() {
 function deleteListItems() {
     if(form.dataset.list == 'categorized') {
         categorizedList.innerHTML = ''
-        localStorage.removeItem('categories')
         CATEGORIZED_LIST = []
         completedCategory = 0
+        localStorage.removeItem('categories')
         localStorage.removeItem('completed_category')
         hideCatListFooter()
     }else {
