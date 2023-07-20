@@ -30,55 +30,53 @@ function readExistingData() {
         listItem.id = category.id
         categorizedList.appendChild(listItem)
         listItem.innerHTML = `
-                                <div class="radio-btn"></div>
+                                <div class="radio-btn ${category.completed ? 'ticked' : ''}"></div>
                                 <p>${category.category}</p>
                                 <div class="trash-icon">
                                     ${trashIcon}
                                 </div>
-                            `
-        listItem.addEventListener('click', function(e) {
-            
+                            `;
+        listItem.addEventListener('click', function(e){
+
+        })
+        const radioBtn = listItem.querySelector('.radio-btn')
+
+        radioBtn.addEventListener('click', function(e) {
+            e.stopPropagation()
+            radioBtn.classList.toggle('ticked')
+            updateCompletedTask(radioBtn, category.id)
         })
         
-        updateCompletedTask(listItem, category.id, category)
-
         // add click event listener on every instance of trash icon button
         const trashIconBtn = listItem.querySelector('.trash-icon')
         trashIconBtn.addEventListener('click', function(e) {
             e.stopPropagation()
             deleteRow(e, category.id) 
         })
+
+        updateCompletedTask(radioBtn, category.id)
     })
     if(CATEGORIZED_LIST.length != 0) {
         showCatListFooter() 
     }
 }
-readExistingData()          // i am in testing
+readExistingData()        
 
 // update completed tasks
-function updateCompletedTask(listItem, categoryId, category = 'just added') {
-    const radioBtn = listItem.querySelector('.radio-btn')
-    category.completed ? radioBtn.classList.add('ticked') : ''
-    
-    radioBtn.addEventListener('click', function(e) {
-        e.stopPropagation()
-        this.classList.toggle('ticked')
-        
-        if(this.classList.contains('ticked')) {
-            isCompleted = true
-            ++completedCategory
-        }else {
-            isCompleted = false
-            completedCategory != 0 ? --completedCategory : '' 
+function updateCompletedTask(radioBtn, categoryId) {
+    if(radioBtn.classList.contains('ticked')) {
+        isCompleted = true
+        ++completedCategory
+    }else {
+        isCompleted = false
+        completedCategory != 0 ? --completedCategory : '' 
+    }
+    localStorage.setItem('completed_category', completedCategory)
+    CATEGORIZED_LIST.find(categ => {
+        if(categ.id == categoryId) {
+            categ.completed = isCompleted
+            localStorage.setItem('categories', JSON.stringify(CATEGORIZED_LIST))
         }
-        localStorage.setItem('completed_category', completedCategory)
-        CATEGORIZED_LIST.find(categ => {
-            if(categ.id == categoryId) {
-                categ.completed = isCompleted
-                localStorage.setItem('categories', JSON.stringify(CATEGORIZED_LIST))
-            }
-        })
-        catProgressMssg.innerText = `${completedCategory}/${CATEGORIZED_LIST.length} completed`
     })
     catProgressMssg.innerText = `${completedCategory}/${CATEGORIZED_LIST.length} completed`
 }
