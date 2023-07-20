@@ -3,6 +3,7 @@ const form = document.querySelector('form')
 const input = document.querySelector('input')
 const addBtn = document.querySelector('.add-btn')
 const deleteAllBtns = document.querySelectorAll('.delete-btn')
+const navBtns = document.querySelectorAll('.nav__btn')
 
 // category list elements
 const categNavBtn = document.querySelector('#categBtn')
@@ -10,7 +11,7 @@ const catListContainer =  document.querySelector('.list-categorized')
 const categorizedList =  document.querySelector('.list-categorized .list')
 const catListFooter = catListContainer.querySelector('.list-footer')
 const catListSpan = catListContainer.querySelector('span')
-const catProgressMssg = catListContainer.querySelector('.progress-mssg')
+const catListProgressMssg = catListContainer.querySelector('.progress-mssg')
 
 // uncategory list elements
 const uncategNavBtn = document.querySelector('#uncategBtn')
@@ -36,64 +37,20 @@ function readExistingData() {
                                     ${trashIcon}
                                 </div>
                             `;
-        listItem.addEventListener('click', function(e){
-
-        })
-        const radioBtn = listItem.querySelector('.radio-btn')
-
-        radioBtn.addEventListener('click', function(e) {
-            e.stopPropagation()
-            radioBtn.classList.toggle('ticked')
-            updateCompletedTask(radioBtn, category.id)
-        })
-        
-        // add click event listener on every instance of trash icon button
-        const trashIconBtn = listItem.querySelector('.trash-icon')
-        trashIconBtn.addEventListener('click', function(e) {
-            e.stopPropagation()
-            deleteRow(e, category.id) 
-        })
-
-        updateCompletedTask(radioBtn, category.id)
+        radioBtnAddClickEvent(listItem, category.id)
+        trashIconBtnAddClickEvent(listItem, category.id)
     })
+
     if(CATEGORIZED_LIST.length != 0) {
         showCatListFooter() 
     }
+    catListProgressMssg.innerText = `${completedCategory}/${CATEGORIZED_LIST.length} completed`
 }
 readExistingData()        
 
-// update completed tasks
-function updateCompletedTask(radioBtn, categoryId) {
-    if(radioBtn.classList.contains('ticked')) {
-        isCompleted = true
-        ++completedCategory
-    }else {
-        isCompleted = false
-        completedCategory != 0 ? --completedCategory : '' 
-    }
-    localStorage.setItem('completed_category', completedCategory)
-    CATEGORIZED_LIST.find(categ => {
-        if(categ.id == categoryId) {
-            categ.completed = isCompleted
-            localStorage.setItem('categories', JSON.stringify(CATEGORIZED_LIST))
-        }
-    })
-    catProgressMssg.innerText = `${completedCategory}/${CATEGORIZED_LIST.length} completed`
-}
-
-form.addEventListener('submit', function(e) {
-    e.preventDefault()
-    addNewToDo()
-    clearInput()
-})
-
-deleteAllBtns.forEach(delBtn => {
-    delBtn.addEventListener('click', deleteListItems)
-})
-
-// add new To-Do
+// add new To-Dos here
 function addNewToDo() {
-    if(input.value == '') return;
+    if(input.value.trim() == '') return;
     if(form.dataset.list == 'categorized') {
         const category_ID = 'item_' + Date.now()
         const listItem = document.createElement('li')
@@ -106,51 +63,96 @@ function addNewToDo() {
                                 <div class="trash-icon">
                                     ${trashIcon}
                                 </div>
-                            `
-        listItem.addEventListener('click', function(e) {
-            if(e.currentTarget == e.target) {
-            }
-        })
-
-        updateCompletedTask(listItem, category_ID)
-
-        // add click event listener on every instance of trash icon button
-        const trashIconBtn = listItem.querySelector('.trash-icon')
-        trashIconBtn.addEventListener('click', function(e) {
-            e.stopPropagation()
-            deleteRow(e, category_ID)
-        })
+                            `;
+        radioBtnAddClickEvent(listItem, category_ID)
+        trashIconBtnAddClickEvent(listItem, category_ID)
         addNewCategory(category_ID, input.value) 
         
     }
+
     showCatListFooter()
+}
+
+// update completed tasks
+function updateCompletedTask(listItem, categoryId) {
+    const radioBtn = listItem.querySelector('.radio-btn')
+    let isCompleted = radioBtn.classList.contains('ticked')
+
+    isCompleted ? ++completedCategory : completedCategory != 0 ? --completedCategory : 'do nothing'
+
+    CATEGORIZED_LIST.find(categ => {
+        if(categ.id == categoryId) {
+            categ.completed = isCompleted
+        }
+    })
+
+    catListProgressMssg.innerText = `${completedCategory}/${CATEGORIZED_LIST.length} completed`
+
+    localStorage.setItem('completed_category', completedCategory)
+    localStorage.setItem('categories', JSON.stringify(CATEGORIZED_LIST))
+}
+
+// form
+form.addEventListener('submit', function(e) {
+    e.preventDefault()
+    addNewToDo()
+    clearInput()
+})
+
+deleteAllBtns.forEach(delBtn => {
+    delBtn.addEventListener('click', deleteListItems)
+})
+
+// add click event listener on every instance of trash icon button
+function trashIconBtnAddClickEvent(listItem, id) {
+    const trashIconBtn = listItem.querySelector('.trash-icon')
+    trashIconBtn.addEventListener('click', function(e) {
+        e.stopPropagation()
+        deleteRow(id)
+    })
+
+}
+
+// add click event listener on every radio-btn element
+function radioBtnAddClickEvent(listItem, id) {
+    const radioBtn = listItem.querySelector('.radio-btn')
+        radioBtn.addEventListener('click', function(e) {
+            e.stopPropagation()
+            radioBtn.classList.toggle('ticked')
+            updateCompletedTask(listItem, id)
+        })
+
 }
 
 // add new category list data
 function addNewCategory(id, category) {
     const category_ID = 'cat_' + Date.now()
     CATEGORIZED_LIST.push({id: id, category: category, completed: false, tasks: []})
-    catProgressMssg.innerText = `0/${CATEGORIZED_LIST.length} completed`
     localStorage.setItem('categories', JSON.stringify(CATEGORIZED_LIST))
+    catListProgressMssg.innerText = `${completedCategory}/${CATEGORIZED_LIST.length} completed`
 }
 
 
 // delete a row on the list
-function deleteRow(e, id) {
+function deleteRow(id) {
     const row = categorizedList.querySelector(`#${id}`)
     categorizedList.removeChild(row)
+    row.firstElementChild.classList.contains('ticked') ? --completedCategory : 'do nothing'
+    
     if(!categorizedList.firstElementChild) {
         hideCatListFooter()
     }
     updateCategorizedListData(id)
-    catProgressMssg.innerText = `0/${CATEGORIZED_LIST.length} completed`
 }
 
 // update categorized list data 
 function updateCategorizedListData(id) {
-    const updatedListData = CATEGORIZED_LIST.filter(category => id != id) 
+    const updatedListData = CATEGORIZED_LIST.filter(category => category.id != id)
+    
     CATEGORIZED_LIST = updatedListData
+    localStorage.setItem('completed_category', completedCategory)
     localStorage.setItem('categories', JSON.stringify(CATEGORIZED_LIST))
+    catListProgressMssg.innerText = `${completedCategory}/${CATEGORIZED_LIST.length} completed`
 }
 
 // clear input
@@ -185,12 +187,12 @@ function deleteListItems() {
     }
 }
 
-const navBtns = document.querySelectorAll('.nav__btn')
 
 navBtns.forEach(btn => {
     btn.addEventListener('click', toggleNav)
 })
 
+// change list to uncategorized/categorized vice-versa.
 function toggleNav() {
     if(this.id == 'uncategBtn') {
         form.dataset.list = 'uncategorized'
