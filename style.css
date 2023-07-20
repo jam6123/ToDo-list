@@ -114,7 +114,7 @@ span {
 
 .list-categorized-tasks {
     display: none;
-    padding-top: 71px;
+    padding-top: 20px;
     position: relative;
 
     z-index: 3;
@@ -151,13 +151,13 @@ span {
 }
 
 .tasks-title {
+    word-wrap: break-word;
+    max-width: 300px;
+    margin-bottom: 12px;
     line-height: 1;
     font-size: 1.4rem;
     font-weight: bold;
     color: var(--primary-clr);
-
-    position: absolute;
-    top: 24px;
 }
 
 .list-uncategorized .list__item,
