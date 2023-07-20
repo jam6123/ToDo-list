@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;1,100;1,200;1,300;1,400&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <form data-list="categorized" action="">
+            <input type="text" placeholder="What is it about?">
+            <button class="add-btn">ADD</button>
+        </form>
+        <div class="nav">
+            <button id="categBtn" class="nav__btn">
+                <h2>Categorized</h2>
+            </button>
+            <button id="uncategBtn" class="nav__btn">
+                <h2>Uncategorized</h2>
+            </button>
+        </div class="nav">
+        <div class="list-container list-categorized">
+            <ul class="list">
+            </ul>
+            <div class="list-footer">
+                <a class="delete-btn" href="#">Delete all</a>
+                <strong class="progress-mssg">0/5 completed</strong>
+            </div>
+            <span>
+                Empty
+            </span>
+        </div>
+        <div class="list-container list-uncategorized">
+            <ul class="list">
+                <li class="list__item">
+                    <div class="radio-btn"></div>
+                    <p>Work</p>
+                </li>
+                <li class="list__item">
+                    <div class="radio-btn"></div>
+                    <p>Work</p>
+                </li>
+                <li class="list__item">
+                    <div class="radio-btn"></div>
+                    <p>Work</p>
+                </li>
+                <li class="list__item">
+                    <div class="radio-btn"></div>
+                    <p>Work</p>
+                </li>
+                <li class="list__item">
+                    <div class="radio-btn"></div>
+                    <p>Work</p>
+                </li>
+            </ul>
+            <div class="list-footer">
+                <a class="delete-btn" href="#">Delete all</a>
+                <strong class="progress-mssg">0/5 completed</strong>
+            </div>
+            <span>
+                Empty
+            </span>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
