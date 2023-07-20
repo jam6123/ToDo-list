@@ -13,6 +13,10 @@ const catListFooter = catListContainer.querySelector('.list-footer')
 const catListSpan = catListContainer.querySelector('span')
 const catListProgressMssg = catListContainer.querySelector('.progress-mssg')
 
+// categorized task elements
+const catTasksContainer = document.querySelector('.list-categorized-tasks')
+const tasksTitle = document.querySelector('.tasks-title')
+
 // uncategory list elements
 const uncategNavBtn = document.querySelector('#uncategBtn')
 const uncatListContainer =  document.querySelector('.list-uncategorized')
@@ -36,16 +40,22 @@ CATEGORIZED_LIST.forEach(category => {
                                 ${trashIcon}
                             </div>
                         `;
-
+    listItemAddClickEvent(listItem)
     radioBtnAddClickEvent(listItem, category.id)
     trashIconBtnAddClickEvent(listItem, category.id)
+    
+    CATEGORIZED_LIST.length != 0 ? showCatListFooter() : 'do nothing'
 })
 // READ/LOAD EXISTING DATA
 
-
-if(CATEGORIZED_LIST.length != 0) {
-    showCatListFooter() 
+function listItemAddClickEvent(listItem) {
+    listItem.addEventListener('click', function() {
+        catTasksContainer.style.display = 'flex'
+        catListContainer.style.display = 'none'
+        tasksTitle.innerText = 'asfasdf'
+    })
 }
+    
 catListProgressMssg.innerText = `${completedCategory}/${CATEGORIZED_LIST.length} completed`
 
 // add new To-Dos here
