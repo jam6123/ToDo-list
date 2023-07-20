@@ -53,7 +53,7 @@ function readExistingData() {
         showCatListFooter() 
     }
 }
-readExistingData()
+readExistingData()          // i am in testing
 
 // update completed tasks
 function updateCompletedTask(listItem, categoryId, category = 'just added') {
