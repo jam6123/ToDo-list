@@ -4,6 +4,7 @@ const input = document.querySelector('input')
 const addBtn = document.querySelector('.add-btn')
 const deleteAllBtns = document.querySelectorAll('.delete-btn')
 const navBtns = document.querySelectorAll('.nav__btn')
+const backBtn = document.querySelector('.back-btn')
 
 // category list elements
 const categNavBtn = document.querySelector('#categBtn')
@@ -39,8 +40,9 @@ CATEGORIZED_LIST.forEach(category => {
                             <div class="trash-icon">
                                 ${trashIcon}
                             </div>
+                            <p class="tasks-completed">${0} tasks</p>
                         `;
-    listItemAddClickEvent(listItem)
+    listItemAddClickEvent(listItem, category.category)
     radioBtnAddClickEvent(listItem, category.id)
     trashIconBtnAddClickEvent(listItem, category.id)
     
@@ -48,11 +50,15 @@ CATEGORIZED_LIST.forEach(category => {
 })
 // READ/LOAD EXISTING DATA
 
-function listItemAddClickEvent(listItem) {
+function listItemAddClickEvent(listItem, title) {
     listItem.addEventListener('click', function() {
         catTasksContainer.style.display = 'flex'
         catListContainer.style.display = 'none'
-        tasksTitle.innerText = 'asfasdf'
+        tasksTitle.innerText = title   
+        categNavBtn.style.color = 'var(--gray-clr)'
+
+        input.placeholder = 'new task here'
+        form.dataset.list = 'categorized_tasks'
     })
 }
     
@@ -74,6 +80,7 @@ function addNewToDo() {
                                     ${trashIcon}
                                 </div>
                             `;
+        listItemAddClickEvent(listItem, input.value)
         radioBtnAddClickEvent(listItem, category_ID)
         trashIconBtnAddClickEvent(listItem, category_ID)
         addNewCategory(category_ID, input.value) 
@@ -109,6 +116,17 @@ form.addEventListener('submit', function(e) {
     clearInput()
 })
 
+// back button 
+backBtn.addEventListener('click', function() {
+    catTasksContainer.style.display = 'none'
+    catListContainer.style.display = 'flex'
+    categNavBtn.style.color = ''
+
+    input.placeholder = 'what is it about?'
+    form.dataset.list = 'categorized'
+})
+
+// delete buttons
 deleteAllBtns.forEach(delBtn => {
     delBtn.addEventListener('click', deleteListItems)
 })

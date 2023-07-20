@@ -10,6 +10,7 @@
 
 :root {
     --primary-clr: #600068;
+    --gray-clr: #a3a3a3;
 }
 
 html {
@@ -72,7 +73,7 @@ input::placeholder {
 }
 
 span {
-    color: #a3a3a3;
+    color: var(--gray-clr);
     font-size: 1.5rem;
 }
 
@@ -124,6 +125,31 @@ span {
     z-index: 1;
 }
 
+.back-btn {
+    padding: 20px;
+    padding-right: 0;
+    padding-left: 197px;
+    border-radius: 100%;
+    background-color: transparent;
+    
+    position: absolute;
+    top: 0;
+    left: 0;
+    translate: -100% 0;
+}
+
+.back-btn:hover .fa-arrow-left--big {
+    opacity: 1;
+}
+
+.fa-arrow-left--big {
+    opacity: .6;
+    transition: .1s ease-in-out;
+    font-size: 2rem;
+    color: var(--gray-clr);
+    translate: 50% 0;
+}
+
 .tasks-title {
     line-height: 1;
     font-size: 1.4rem;
@@ -157,17 +183,28 @@ nav .nav__btn {
     color: var(--primary-clr);
     background-color: #EFEFEF;
     padding: 23px 0;
+    padding-right: 23px;
     border-bottom: 3px solid #EC7AFF;
     margin-bottom: 14px;
     font-size: 1.4rem;
     font-weight: bold;
     cursor: pointer;
     transition: all .5s;
+    word-break: break-all;
     
     display: flex;
     align-items: center;
     
     position: relative;
+}
+
+.tasks-completed {
+    font-weight: normal;
+    font-size: 12px;
+    color: var(--primary-clr);
+    position: absolute;
+    right: 5px;
+    bottom: 0;
 }
 
 .trash-icon {
