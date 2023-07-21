@@ -198,6 +198,10 @@ nav .nav__btn {
     position: relative;
 }
 
+.list__item.marked p {
+    text-decoration: line-through;
+}
+
 .tasks-completed {
     font-weight: normal;
     font-size: 12px;
@@ -266,7 +270,7 @@ svg {
 }
 
 
-.radio-btn.ticked::after {
+.list__item.marked .radio-btn::after {
     display: block;
 }
 
@@ -298,7 +302,7 @@ svg {
     color: rgb(255, 78, 78);
 }
 
-.progress-mssg {
+.progress {
     font-weight: 400;
     font-style: italic;
     font-size: 12px;

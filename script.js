@@ -5,15 +5,16 @@ const deleteAllBtns = document.querySelectorAll('.delete-btn')
 const navBtns = document.querySelectorAll('.nav__btn')
 const backBtn = document.querySelector('.back-btn')
 
-const list_CATEGORIZED =  document.querySelector('.list-categorized .list')
-const listFooters = document.querySelectorAll('.list-footer')
-const emptyWords = document.querySelectorAll('.empty-word')
-const progressMssgs = document.querySelectorAll('.progress')
+const categorizedList =  document.querySelector('.list-categorized .list')
+const categorizedListFooter = categorizedList.parentElement.querySelector('.list-footer')
+const categorizedListProgress = categorizedList.parentElement.querySelector('.progress')
 
-const catTasksContainer = document.querySelector('.list-categorized-tasks')
-const tasksTitle = document.querySelector('.tasks-title')
+const categorizedTasksList = document.querySelector('.list-categorized-tasks .list')
+const tasksTitle = document.querySelector('.tasks-category')
 
 let CATEGORIZED_LIST = []
+let completedCategory = 0
+
 
 form.addEventListener('submit', function(e) {
     e.preventDefault()
@@ -32,41 +33,81 @@ function addNewTodos() {
     clearInput()
 }
 
+// add category
 function addNewCategory() {
+    const id = 'li_' + Date.now()
     const li = document.createElement('li')
-    list_CATEGORIZED.appendChild(li)
+    categorizedList.appendChild(li)
     li.classList.add('list__item')
+    li.id = id
     li.innerHTML = `
                         <div class="radio-btn"></div>
                             <p>${input.value}</p>
                             <div class="trash-icon">
                                 ${trashIcon}
                             </div>
-                        <p class="tasks-completed">${0} tasks</p>
+                        <strong class="tasks-completed">${0} tasks</strong>
                     `;
     const trashIconBtn = li.querySelector('.trash-icon')
-    trashIconBtn.addEventListener('click', function(){ deleteRow(li, id) })
+    trashIconBtn.addEventListener('click', function(e){ deleteRow(e, li, id) })
 
-    const id = 'li_' + Date.now()
+    const radioBtn = li.querySelector('.radio-btn')
+    radioBtn.addEventListener('click', function(e) { markCompleted(e, li, id) })
+
     CATEGORIZED_LIST.push(
         {
             id,
             category: input.value,
             completed: false,
-            tasks: []
+            tasks: [],
         }
     )
-    // localStorage.setItem('categorized-list', JSON.stringify(CATEGORIZED_LIST))
+    updateLocalStorage()
+
+    const emptyWord = li.parentElement.parentElement.querySelector('.empty-word')
+    emptyWord.style.display = 'none'
+
+    categorizedListFooter.style.display = 'flex'
+    categorizedListProgress.innerText = `${completedCategory}/${CATEGORIZED_LIST.length} completed`
+
+}
+
+// mark/outline completed
+function markCompleted(e, li, id) {
+    e.stopPropagation()
+    li.classList.toggle('marked')
+    const isMarked = li.classList.contains('marked')
+    isMarked ? ++completedCategory  : --completedCategory
+
+    const foundIndex = CATEGORIZED_LIST.findIndex(list => list.id == id)
+    CATEGORIZED_LIST[foundIndex].completed = isMarked
+    categorizedListProgress.innerText = `${completedCategory}/${CATEGORIZED_LIST.length} completed`
+    updateLocalStorage()
+    
 }
 
 // delete row
-function deleteRow(li, id) {
+function deleteRow(e, li, id) {
+    e.stopPropagation()
     li.parentElement.removeChild(li)
+    li.classList.contains('marked') ? --completedCategory : 'do nothing'
     CATEGORIZED_LIST = CATEGORIZED_LIST.filter(list => list.id != id)
-    // localStorage.setItem('categorized-list', JSON.stringify(CATEGORIZED_LIST))
+    categorizedListProgress.innerText = `${completedCategory}/${CATEGORIZED_LIST.length} completed`
+    updateLocalStorage()
 }
 
 // clear input 
 function clearInput() {
     input.value = ''
+}
+
+// update localstorage
+function updateLocalStorage() {
+    localStorage.setItem('categorized-list', JSON.stringify(CATEGORIZED_LIST))
+    localStorage.setItem('categorized-list_completed', completedCategory)
+
+    if(JSON.parse(localStorage.getItem('categorized-list')).length == 0) {
+        localStorage.removeItem('categorized-list')
+        localStorage.removeItem('categorized-list_completed')
+    }
 }
