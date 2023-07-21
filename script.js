@@ -8,6 +8,10 @@ const backBtn = document.querySelector('.back-btn')
 const categorizedList =  document.querySelector('.list-categorized .list')
 const categorizedListFooter = categorizedList.parentElement.querySelector('.list-footer')
 const categorizedListProgress = categorizedList.parentElement.querySelector('.progress')
+const categorizedListEmptyWord = categorizedList.parentElement.querySelector('.empty-word')
+const categorizedListDelBtn = categorizedList.parentElement.querySelector('.delete-btn')
+
+const categorizedListTasks = document.querySelector('.list-categorized-tasks')
 
 const categorizedTasksList = document.querySelector('.list-categorized-tasks .list')
 const tasksTitle = document.querySelector('.tasks-category')
@@ -64,10 +68,7 @@ function addNewCategory() {
     )
     updateLocalStorage()
 
-    const emptyWord = li.parentElement.parentElement.querySelector('.empty-word')
-    emptyWord.style.display = 'none'
-
-    categorizedListFooter.style.display = 'flex'
+    toggleCategorizedListFooter() 
     categorizedListProgress.innerText = `${completedCategory}/${CATEGORIZED_LIST.length} completed`
 
 }
@@ -93,6 +94,7 @@ function deleteRow(e, li, id) {
     li.classList.contains('marked') ? --completedCategory : 'do nothing'
     CATEGORIZED_LIST = CATEGORIZED_LIST.filter(list => list.id != id)
     categorizedListProgress.innerText = `${completedCategory}/${CATEGORIZED_LIST.length} completed`
+    toggleCategorizedListFooter()
     updateLocalStorage()
 }
 
@@ -101,13 +103,40 @@ function clearInput() {
     input.value = ''
 }
 
+// hide footer elements on categorized list
+function toggleCategorizedListFooter() {
+    const isListNotEmpty = categorizedList.firstElementChild
+    categorizedListEmptyWord.style.display = isListNotEmpty ? 'none' : 'inline'
+    categorizedListFooter.style.display = isListNotEmpty ? 'flex' : 'none'
+}
+
 // update localstorage
 function updateLocalStorage() {
     localStorage.setItem('categorized-list', JSON.stringify(CATEGORIZED_LIST))
     localStorage.setItem('categorized-list_completed', completedCategory)
 
-    if(JSON.parse(localStorage.getItem('categorized-list')).length == 0) {
+    if(CATEGORIZED_LIST.length == 0) {
         localStorage.removeItem('categorized-list')
         localStorage.removeItem('categorized-list_completed')
     }
+}
+
+// delete or empty current list
+deleteAllBtns.forEach(btn => {
+    btn.addEventListener('click', deleteCurrentList)
+})
+
+function deleteCurrentList(e) {
+    const currentListContainer  = e.currentTarget.parentElement.parentElement.querySelector('.list').parentElement
+    if(currentListContainer.classList.contains('list-categorized')) {
+        categorizedList.innerHTML = ''
+        CATEGORIZED_LIST = []
+        completedCategory = 0
+        localStorage.removeItem('categorized-list')
+        localStorage.removeItem('categorized-list_completed')
+    
+    }else if(currentListContainer.classList.contains('list-categorized-tasks')) {
+        categorizedListTasks.innerHTML = ''
+    }
+    toggleCategorizedListFooter()
 }
