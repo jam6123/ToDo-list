@@ -11,13 +11,42 @@ const categorizedListProgress = categorizedList.parentElement.querySelector('.pr
 const categorizedListEmptyWord = categorizedList.parentElement.querySelector('.empty-word')
 const categorizedListDelBtn = categorizedList.parentElement.querySelector('.delete-btn')
 
-const categorizedListTasks = document.querySelector('.list-categorized-tasks')
+const categorizedListTasks = document.querySelector('.list-categorized-tasks .list')
 
 const categorizedTasksList = document.querySelector('.list-categorized-tasks .list')
 const tasksTitle = document.querySelector('.tasks-category')
 
-let CATEGORIZED_LIST = []
+const categorizedListExistingData = JSON.parse(localStorage.getItem('categorized-list'))
+let CATEGORIZED_LIST = categorizedListExistingData || []
 let completedCategory = 0
+
+// load/read existing category list from local storage
+CATEGORIZED_LIST.forEach(list => {
+    const li = document.createElement('li')
+    categorizedList.appendChild(li)
+    li.classList.add('list__item')
+    if(list.completed) {
+        li.classList.add('marked')
+        ++completedCategory
+    }
+    li.id = list.id
+    li.innerHTML = `
+                        <div class="radio-btn"></div>
+                            <p>${list.category}</p>
+                            <div class="trash-icon">
+                                ${trashIcon}
+                            </div>
+                        <strong class="tasks-completed">${0} tasks</strong>
+                    `;
+    const trashIconBtn = li.querySelector('.trash-icon')
+    trashIconBtn.addEventListener('click', function(e){ deleteRow(e, li, list.id) })
+
+    const radioBtn = li.querySelector('.radio-btn')
+    radioBtn.addEventListener('click', function(e) { markCompleted(e, li, list.id) })
+
+    categorizedListProgress.innerText = `${completedCategory}/${CATEGORIZED_LIST.length} completed`
+    toggleCategorizedListFooter()
+})
 
 
 form.addEventListener('submit', function(e) {
@@ -52,6 +81,8 @@ function addNewCategory() {
                             </div>
                         <strong class="tasks-completed">${0} tasks</strong>
                     `;
+    li.addEventListener('click', showCategoryTasks)
+
     const trashIconBtn = li.querySelector('.trash-icon')
     trashIconBtn.addEventListener('click', function(e){ deleteRow(e, li, id) })
 
@@ -71,6 +102,14 @@ function addNewCategory() {
     toggleCategorizedListFooter() 
     categorizedListProgress.innerText = `${completedCategory}/${CATEGORIZED_LIST.length} completed`
 
+}
+
+// show or navigate to category list's tasks if it has
+function showCategoryTasks() {
+    form.dataset.list = 'categorized_tasks'
+    categorizedList.parentElement.style.display = 'none'
+    categorizedListTasks.parentElement.style.display = 'flex'
+    
 }
 
 // mark/outline completed
@@ -121,7 +160,7 @@ function updateLocalStorage() {
     }
 }
 
-// delete or empty current list
+// delete or empty the current list
 deleteAllBtns.forEach(btn => {
     btn.addEventListener('click', deleteCurrentList)
 })

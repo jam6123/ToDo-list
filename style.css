@@ -200,6 +200,7 @@ nav .nav__btn {
 
 .list__item.marked p {
     text-decoration: line-through;
+    text-decoration-thickness: 4px;
 }
 
 .tasks-completed {
@@ -227,10 +228,14 @@ nav .nav__btn {
     transform: scale(1.4);
 }
 
-.list__item:hover .trash-icon {
+.list__item:hover .trash-icon,
+.list__item:hover .tasks-completed {
     display: block;
 }
 
+.tasks-completed {
+    display: none;
+}
 
 svg {
     transition: all .2s;
