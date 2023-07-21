@@ -6,6 +6,7 @@
     border: none;
     outline: none;
     user-select: none;
+    -webkit-user-drag: none;
 }
 
 :root {
@@ -22,6 +23,7 @@ body {
     background-repeat: no-repeat;
     height: 100vh;
     padding-top: 1px;
+    /* overflow: hidden; */
 }
 
 button {
@@ -125,6 +127,15 @@ span {
     z-index: 1;
 }
 
+.tasks-category {
+    color: var(--primary-clr);
+    font-weight: bold;
+    margin-bottom: 20px;
+    max-width: 300px;
+    word-wrap: break-word;
+    font-size: 1.4rem;
+}
+
 .back-btn {
     padding: 20px;
     padding-right: 0;
@@ -150,7 +161,7 @@ span {
     translate: 50% 0;
 }
 
-.tasks-title {
+.taskscount {
     word-wrap: break-word;
     max-width: 300px;
     margin-bottom: 12px;
@@ -166,6 +177,7 @@ span {
     font-weight: normal;
     font-size: 1.17rem;
     border: none;
+    cursor: default;
 }
 
 nav .nav__btn {
@@ -200,10 +212,11 @@ nav .nav__btn {
 
 .list__item.marked p {
     text-decoration: line-through;
+    color: #60006885;
     text-decoration-thickness: 4px;
 }
 
-.tasks-completed {
+.tasks-count {
     font-weight: normal;
     font-size: 12px;
     color: var(--primary-clr);
@@ -216,6 +229,7 @@ nav .nav__btn {
     position: absolute;
     right: 10px;
     top: 10px;
+    cursor: pointer;
 
     display: none;
 }
@@ -229,11 +243,11 @@ nav .nav__btn {
 }
 
 .list__item:hover .trash-icon,
-.list__item:hover .tasks-completed {
+.list__item:hover .tasks-count {
     display: block;
 }
 
-.tasks-completed {
+.tasks-count {
     display: none;
 }
 
