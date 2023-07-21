@@ -174,16 +174,25 @@ function markCompleted(e, li, id) {
     li.classList.toggle('marked')
     const isMarked = li.classList.contains('marked')
     switch(form.dataset.list) {
-        case 'categorized':
+        case 'categorized': {
             isMarked ? ++completedCategory  : --completedCategory
             const foundIndex = CATEGORIZED_LIST.findIndex(list => list.id == id)
             CATEGORIZED_LIST[foundIndex].completed = isMarked
             categorizedListProgress.innerText = `${completedCategory}/${CATEGORIZED_LIST.length} completed`
             updateLocalStorage()
             break
-        case 'categorized_tasks':
+        }
+        case 'categorized_tasks':   {
             isMarked ? ++completedCategoryTask  : --completedCategoryTask
+            const foundIndex = CATEGORIZED_LIST.findIndex(list => list.id == lastVisitedCategory.id)
+            const tasks = CATEGORIZED_LIST[foundIndex].tasksList.tasks
+            tasks.find(task => task.id == id).marked = isMarked
+
+            categorizedListTasksProgress.innerText = `${completedCategoryTask}/${taskCount} completed`
+            updateCategoryTasksCount()
+            updateLocalStorage()
             break
+        }   
     }
 
     
@@ -211,6 +220,7 @@ function deleteRow(e, listItem, id) {
             CATEGORIZED_LIST[foundIndex].tasksList.tasks = updatedTasks
             taskCount = updatedTasks.length
             categorizedListTasksProgress.innerText = `${completedCategoryTask}/${taskCount} completed`
+            updateCategoryTasksCount()
             updateLocalStorage()
             break
     }
@@ -300,8 +310,8 @@ function createCategoryTasks() {
     const trashIconBtn = li.querySelector('.trash-icon')
     trashIconBtn.addEventListener('click', function(e){ deleteRow(e, li, id) })
 
-    // const radioBtn = li.querySelector('.radio-btn')
-    // radioBtn.addEventListener('click', function(e) { markCompleted(e, li, id) })
+    const radioBtn = li.querySelector('.radio-btn')
+    radioBtn.addEventListener('click', function(e) { markCompleted(e, li, id) })
 
     // updateLocalStorage()
     const foundIndex = CATEGORIZED_LIST.findIndex(list => list.id == lastVisitedCategory.id)
@@ -322,10 +332,10 @@ function createCategoryTasks() {
 
 // upate progress length in categorzed_tasks panel DONE
 // update tasks COUNT in categorized panel DONE
+// load tasks from clicked category DONE
 
 // update progress COUNT in categorzed_tasks panel 
 // when category is marked mark all of its tasks too
-// load tasks from clicked category
 
 
 // update tasks count of specific category from categorized panel
