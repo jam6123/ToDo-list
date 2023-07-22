@@ -2,25 +2,29 @@ const trashIcon = `<svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox=
 const form = document.querySelector('form')
 const input = document.querySelector('input')
 const deleteAllBtns = document.querySelectorAll('.delete-btn')
-const navBtns = document.querySelectorAll('.nav__btn')
 const backBtn = document.querySelector('.back-btn')
+
+const navBtns = document.querySelectorAll('.nav__btn')
+const categorizedBtn =  navBtns[0]
+const uncategorizedBtn =  navBtns[1]
 
 const categorizedList =  document.querySelector('.list-categorized .list')
 const categorizedListProgress = categorizedList.parentElement.querySelector('.progress')
 const categorizedListDelBtn = categorizedList.parentElement.querySelector('.delete-btn')
 
-const categorizedListTasks = document.querySelector('.list-categorized-tasks .list')
-const categorizedListTasksProgress = categorizedListTasks.parentElement.querySelector('.progress')
-
 const categorizedTasksList = document.querySelector('.list-categorized-tasks .list')
+const categorizedTasksListProgress = categorizedTasksList.parentElement.querySelector('.progress')
 const tasksCategory = document.querySelector('.tasks-category')
+
+const uncategorizedList = document.querySelector('.list-uncategorized .list')
+console.log(uncategorizedList)
 
 const categorizedListExistingData = JSON.parse(localStorage.getItem('categorized-list'))
 let CATEGORIZED_LIST = categorizedListExistingData || []
 let completedCategory = 0
 let completedCategoryTask = 0
-let lastVisitedCategory;
-let taskCount;
+let lastVisitedCategory = null
+let taskCount = 0
 
 
 
@@ -48,7 +52,7 @@ CATEGORIZED_LIST.forEach(list => {
     trashIconBtn.addEventListener('click', function(e){ deleteRow(e, li, list.id) })
 
     const radioBtn = li.querySelector('.radio-btn')
-    radioBtn.addEventListener('click', function(e) { markCompleted(e, li, list.id) })
+    radioBtn.addEventListener('click', function(e) { markListItem(e, li, list.id) })
 
     categorizedListProgress.innerText = `${completedCategory}/${CATEGORIZED_LIST.length} completed`
     toggleFooter(categorizedList)
@@ -99,7 +103,7 @@ function addNewCategory() {
     trashIconBtn.addEventListener('click', function(e){ deleteRow(e, li, id) })
 
     const radioBtn = li.querySelector('.radio-btn')
-    radioBtn.addEventListener('click', function(e) { markCompleted(e, li, id) })
+    radioBtn.addEventListener('click', function(e) { markListItem(e, li, id) })
 
     CATEGORIZED_LIST.push(
         {
@@ -111,17 +115,18 @@ function addNewCategory() {
     )
     updateLocalStorage()
 
-    toggleFooter(categorizedList) 
     categorizedListProgress.innerText = `${completedCategory}/${CATEGORIZED_LIST.length} completed`
-
+    toggleFooter(categorizedList) 
 }
 
 // show or navigate to category list's tasks if it has
 function showCategoryTasksList(list, title, listItem) {
     form.dataset.list = 'categorized_tasks'
     input.placeholder = 'add new task here'
+    input.value = ''
     categorizedList.parentElement.style.display = 'none'
-    categorizedListTasks.parentElement.style.display = 'flex'
+    categorizedTasksList.parentElement.style.display = 'flex'
+    categorizedBtn.style.color = '#EFEFEF'
 
     tasksCategory.innerText = title
     lastVisitedCategory = listItem
@@ -133,10 +138,9 @@ function showCategoryTasksList(list, title, listItem) {
 function loadCagtegoryTasks() {
     const listItem = CATEGORIZED_LIST.find(list => list.id == lastVisitedCategory.id)
     listItem.tasksList.tasks.forEach(task => {
-        // const id = 'li_' + Date.now()
-        // const task = input.value
+
         const li = document.createElement('li')
-        categorizedListTasks.appendChild(li)
+        categorizedTasksList.appendChild(li)
         li.classList.add('list__item')
         li.id = task.id
         if(task.marked) {
@@ -153,23 +157,22 @@ function loadCagtegoryTasks() {
         const trashIconBtn = li.querySelector('.trash-icon')
         trashIconBtn.addEventListener('click', function(e){ deleteRow(e, li, task.id) })
 
-        // const radioBtn = li.querySelector('.radio-btn')
-        // radioBtn.addEventListener('click', function(e) { markCompleted(e, li, id) })
+        const radioBtn = li.querySelector('.radio-btn')
+        radioBtn.addEventListener('click', function(e) { markListItem(e, li, task.id) })
 
-        // updateLocalStorage()
         const foundIndex = CATEGORIZED_LIST.findIndex(list => list.id == lastVisitedCategory.id)
         // CATEGORIZED_LIST[foundIndex].tasksList.tasks.push(task)
         taskCount = CATEGORIZED_LIST[foundIndex].tasksList.tasks.length
         // toggleFooter(categorizedList) 
-        categorizedListTasksProgress.innerText = `${completedCategoryTask}/${taskCount} completed`
+        categorizedTasksListProgress.innerText = `${completedCategoryTask}/${taskCount} completed`
         updateCategoryTasksCount()
         updateLocalStorage()
-        toggleFooter(categorizedListTasks)
+        toggleFooter(categorizedTasksList)
     })
 }
 
-// mark/outline completed
-function markCompleted(e, li, id) {
+// mark/outline list item
+function markListItem(e, li, id) {
     e.stopPropagation()
     li.classList.toggle('marked')
     const isMarked = li.classList.contains('marked')
@@ -187,8 +190,9 @@ function markCompleted(e, li, id) {
             const foundIndex = CATEGORIZED_LIST.findIndex(list => list.id == lastVisitedCategory.id)
             const tasks = CATEGORIZED_LIST[foundIndex].tasksList.tasks
             tasks.find(task => task.id == id).marked = isMarked
+            CATEGORIZED_LIST.find(category => category.id == lastVisitedCategory.id).tasksList.completedTasks = completedCategoryTask
 
-            categorizedListTasksProgress.innerText = `${completedCategoryTask}/${taskCount} completed`
+            categorizedTasksListProgress.innerText = `${completedCategoryTask}/${taskCount} completed`
             updateCategoryTasksCount()
             updateLocalStorage()
             break
@@ -219,7 +223,7 @@ function deleteRow(e, listItem, id) {
             const updatedTasks = tasks.filter(task => task.id != id)
             CATEGORIZED_LIST[foundIndex].tasksList.tasks = updatedTasks
             taskCount = updatedTasks.length
-            categorizedListTasksProgress.innerText = `${completedCategoryTask}/${taskCount} completed`
+            categorizedTasksListProgress.innerText = `${completedCategoryTask}/${taskCount} completed`
             updateCategoryTasksCount()
             updateLocalStorage()
             break
@@ -235,19 +239,27 @@ function clearInput() {
 // back button 
 backBtn.addEventListener('click', function() {
     form.dataset.list = 'categorized'
-    input.placeholder = 'What is it about?'
+    input.placeholder = 'what is it about?'
+    input.value = ''
     categorizedList.parentElement.style.display = 'flex'
-    categorizedListTasks.parentElement.style.display = 'none'
-    categorizedListTasks.innerHTML = ''
+    categorizedTasksList.parentElement.style.display = 'none'
+    categorizedBtn.style.color = ''
+    removeLoadedTaskAndInfo()
 
 })
 
-// hide footer elements on categorized list
+// remove loaded task and it's info after heading back
+function removeLoadedTaskAndInfo() {
+    categorizedTasksList.innerHTML = ''
+    completedCategoryTask = 0   
+}
+
+// hide list-footer elements 
 function toggleFooter(list) {
 
     // if we are inside the tasks of category 
     if(form.dataset.list == 'categorized_tasks') {
-        list = categorizedListTasks
+        list = categorizedTasksList
     }
 
     const isListNotEmpty = list.firstElementChild
@@ -284,7 +296,8 @@ function deleteCurrentList(e) {
         localStorage.removeItem('categorized-list_completed')
     
     }else if(list.parentElement.classList.contains('list-categorized-tasks')) {
-        categorizedListTasks.innerHTML = ''
+        categorizedTasksList.innerHTML = ''
+        CATEGORIZED_LIST.find(category => category.id == lastVisitedCategory.id).tasksList.tasks = []
         
     }else if(list.parentElement.classList.contains('list-uncategorized')) {
 
@@ -297,7 +310,7 @@ function createCategoryTasks() {
     const id = 'li_' + Date.now()
     const task = input.value
     const li = document.createElement('li')
-    categorizedListTasks.appendChild(li)
+    categorizedTasksList.appendChild(li)
     li.classList.add('list__item')
     li.id = id
     li.innerHTML = `
@@ -311,7 +324,7 @@ function createCategoryTasks() {
     trashIconBtn.addEventListener('click', function(e){ deleteRow(e, li, id) })
 
     const radioBtn = li.querySelector('.radio-btn')
-    radioBtn.addEventListener('click', function(e) { markCompleted(e, li, id) })
+    radioBtn.addEventListener('click', function(e) { markListItem(e, li, id) })
 
     // updateLocalStorage()
     const foundIndex = CATEGORIZED_LIST.findIndex(list => list.id == lastVisitedCategory.id)
@@ -324,17 +337,17 @@ function createCategoryTasks() {
     )
     taskCount = CATEGORIZED_LIST[foundIndex].tasksList.tasks.length
     // toggleFooter(categorizedList) 
-    categorizedListTasksProgress.innerText = `${completedCategoryTask}/${taskCount} completed`
+    categorizedTasksListProgress.innerText = `${completedCategoryTask}/${taskCount} completed`
     updateCategoryTasksCount()
     updateLocalStorage()
-    toggleFooter(categorizedListTasks)
+    toggleFooter(categorizedTasksList)
 }
 
 // upate progress length in categorzed_tasks panel DONE
 // update tasks COUNT in categorized panel DONE
 // load tasks from clicked category DONE
+// update progress COUNT in categorzed_tasks panel by clicking radio btn when after refresh DONE
 
-// update progress COUNT in categorzed_tasks panel 
 // when category is marked mark all of its tasks too
 
 
@@ -342,4 +355,26 @@ function createCategoryTasks() {
 function updateCategoryTasksCount() {
     const taskCountElement = lastVisitedCategory.querySelector('.tasks-count')
     taskCountElement.innerText = taskCount + ' tasks.'
+}
+
+// show the uncategorized list
+uncategorizedBtn.addEventListener('click', showUncategorizedList)
+
+function showUncategorizedList() {
+    form.dataset.list = 'uncategorized'
+    input.value = ''
+    input.placeholder = 'add new task here'
+    categorizedList.parentElement.style.display = 'none'
+    uncategorizedList.parentElement.style.display = 'flex'
+}
+
+// show the categorized list
+categorizedBtn.addEventListener('click', showCategoryList)
+
+function showCategoryList() {
+    form.dataset.list = 'categorized'
+    input.value = ''
+    input.placeholder = 'what is it about?'
+    categorizedList.parentElement.style.display = 'flex'
+    uncategorizedList.parentElement.style.display = 'none'
 }

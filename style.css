@@ -41,18 +41,28 @@ button {
 form {
     display: flex;
     margin-bottom: 10px;
+    background-color: white;
+    border-radius: 6px;
+    overflow: hidden;
 }
 
 input {
+    margin: 1px;
     padding: 22px;
     font-size: 22px;
     font-weight: bold;
-    color: var(--primary-clr);
+    color: black;
     flex: 1;
+    outline: 1px solid rgb(255, 255, 255);
+    transition: all .2s ease-out;
+}
+
+input:focus {
+    outline: 1px solid rgb(63, 63, 255);
 }
 
 input::placeholder {
-    color: #a3a3a3;
+    color: #b6b6b6;
 }
 
 .add-btn {
@@ -66,6 +76,7 @@ input::placeholder {
     min-height: 142px;
     background-color: white;
     padding: 36px;
+    border-radius: 0 6px 6px 6px;
 
     display: flex;
     align-items: center;
@@ -84,6 +95,8 @@ span {
     left: 0;
     top: 0;
     translate: -100% 0;
+    border-radius: 6px 0 0 6px;
+    overflow: hidden;
     
 }
 
@@ -161,16 +174,6 @@ span {
     translate: 50% 0;
 }
 
-.taskscount {
-    word-wrap: break-word;
-    max-width: 300px;
-    margin-bottom: 12px;
-    line-height: 1;
-    font-size: 1.4rem;
-    font-weight: bold;
-    color: var(--primary-clr);
-}
-
 .list-uncategorized .list__item,
 .list-categorized-tasks .list__item{
     font-style: italic;
@@ -178,6 +181,16 @@ span {
     font-size: 1.17rem;
     border: none;
     cursor: default;
+}
+
+.list-categorized-tasks .list__item,
+.list-uncategorized .list__item {
+    background-color: transparent;
+}
+
+.list-categorized-tasks .list__item p,
+.list-uncategorized .list__item {
+    color: black;
 }
 
 nav .nav__btn {
@@ -212,7 +225,6 @@ nav .nav__btn {
 
 .list__item.marked p {
     text-decoration: line-through;
-    color: #60006885;
     text-decoration-thickness: 4px;
 }
 
@@ -259,11 +271,14 @@ svg {
 }
 
 .radio-btn {
-    position: relative;
     padding: 0 30px;
+
     display: flex;
     justify-content: center;
     align-items: center;
+    
+    position: relative;
+    transition: all .2s;
 }
 
 .radio-btn::before {
