@@ -32,7 +32,7 @@ button {
 
 .container {
     width: 545px;
-    margin: 40px auto;
+    margin: 14px auto;
     display: grid;
     
     position: relative;
@@ -180,18 +180,10 @@ span {
     font-style: italic;
     font-weight: normal;
     font-size: 1.17rem;
-    border: none;
-    cursor: default;
-}
-
-.list-categorized-tasks .list__item,
-.list-uncategorized .list__item {
-    background-color: transparent;
-}
-
-.list-categorized-tasks .list__item p,
-.list-uncategorized .list__item {
+    margin-bottom: 0;
     color: black;
+    cursor: default;
+    background-color: transparent;
 }
 
 nav .nav__btn {
@@ -235,17 +227,20 @@ nav .nav__btn {
     padding-right: 23px;
     border-radius: 6px;
     margin: 0 5px;
-    margin-bottom: 14px;
+    margin-bottom: 20px;
     font-size: 1.4rem;
     font-weight: bold;
     cursor: pointer;
-    transition: all .5s;
     word-break: break-all;
 
     display: flex;
     align-items: center;
     
     position: relative;
+}
+
+.list-categorized .list__item:hover {
+    background-color: rgb(235, 235, 235);
 }
 
 .list__item.marked p {
@@ -290,7 +285,7 @@ nav .nav__btn {
     translate: -124% 0;
     visibility: hidden;
     color: #b6b6b6;
-    transition: all 1s ;
+    transition: all .5s ;
 }
 
 .edit-btn.hidden {
