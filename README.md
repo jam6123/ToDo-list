@@ -1,8 +1,7 @@
 # ToDo-list
-![to do list app]
-(/screenshots/Screenshot1.png)
-(/screenshots/Screenshot2.png)
-(/screenshots/Screenshot3.png)
+![to do list app](/screenshots/Screenshot1.png)
+![](/screenshots/Screenshot2.png)
+![](/screenshots/Screenshot3.png)
 **User can create tasks**
 
 **User can edit category**
