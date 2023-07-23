@@ -220,10 +220,9 @@ function loadCagtegoryTasks() {
         const radioBtn = li.querySelector('.radio-btn')
         radioBtn.addEventListener('click', function(e) { markListItem(e, li, task.id) })
 
-        const foundIndex = CATEGORIZED_LIST.findIndex(list => list.id == lastVisitedCategory.id)
-        // CATEGORIZED_LIST[foundIndex].tasksList.tasks.push(task)
-        taskCount = CATEGORIZED_LIST[foundIndex].tasksList.tasks.length
-        // toggleFooter(categorizedList) 
+        const category = CATEGORIZED_LIST.find(list => list.id == lastVisitedCategory.id)
+        taskCount = category.tasksList.tasks.length
+
         categorizedTasksListProgress.innerText = `${completedCategoryTask}/${taskCount} completed`
         updateCategoryTasksCount()
         updateLocalStorage()
@@ -247,8 +246,8 @@ function markListItem(e, li, id) {
         }
         case 'categorized_tasks':   {
             isMarked ? ++completedCategoryTask  : --completedCategoryTask
-            const foundIndex = CATEGORIZED_LIST.findIndex(list => list.id == lastVisitedCategory.id)
-            const tasks = CATEGORIZED_LIST[foundIndex].tasksList.tasks
+            const category = CATEGORIZED_LIST.find(list => list.id == lastVisitedCategory.id)
+            const tasks = category.tasksList.tasks
             tasks.find(task => task.id == id).marked = isMarked
             CATEGORIZED_LIST.find(category => category.id == lastVisitedCategory.id).tasksList.completedTasks = completedCategoryTask
 
@@ -278,10 +277,10 @@ function deleteRow(e, listItem, id) {
             break
         case 'categorized_tasks':
             isMarked ? --completedCategoryTask : 'do nothing'
-            const foundIndex = CATEGORIZED_LIST.findIndex(list => list.id == lastVisitedCategory.id)
-            const tasks = CATEGORIZED_LIST[foundIndex].tasksList.tasks
+            const category = CATEGORIZED_LIST.find(list => list.id == lastVisitedCategory.id)
+            const tasks = category.tasksList.tasks
             const updatedTasks = tasks.filter(task => task.id != id)
-            CATEGORIZED_LIST[foundIndex].tasksList.tasks = updatedTasks
+            category.tasksList.tasks = updatedTasks
             taskCount = updatedTasks.length
             categorizedTasksListProgress.innerText = `${completedCategoryTask}/${taskCount} completed`
             updateCategoryTasksCount()
@@ -387,15 +386,15 @@ function createCategoryTasks() {
     radioBtn.addEventListener('click', function(e) { markListItem(e, li, id) })
 
     // updateLocalStorage()
-    const foundIndex = CATEGORIZED_LIST.findIndex(list => list.id == lastVisitedCategory.id)
-    CATEGORIZED_LIST[foundIndex].tasksList.tasks.push(
+    const category = CATEGORIZED_LIST.find(list => list.id == lastVisitedCategory.id)
+    category.tasksList.tasks.push(
         {
             id,
             task,
             marked: false
         }
     )
-    taskCount = CATEGORIZED_LIST[foundIndex].tasksList.tasks.length
+    taskCount = category.tasksList.tasks.length
     // toggleFooter(categorizedList) 
     categorizedTasksListProgress.innerText = `${completedCategoryTask}/${taskCount} completed`
     updateCategoryTasksCount()
