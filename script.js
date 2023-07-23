@@ -19,11 +19,9 @@ const tasksCategory = document.querySelector('.tasks-category')
 const uncategorizedList = document.querySelector('.list-uncategorized .list')
 const uncategorizedListProgress = uncategorizedList.parentElement.querySelector('.progress')
 let UNCATEGORIZED_LIST = JSON.parse(localStorage.getItem('uncategorized-list')) || {completedTasks: 0, tasks: []}
-let uncategorizedTasksCount = 0
-let uncategorizedTasksCompleted = 0
+let uncategorizedTasksCompleted
 
-const categorizedListExistingData = JSON.parse(localStorage.getItem('categorized-list'))
-let CATEGORIZED_LIST = categorizedListExistingData || []
+let CATEGORIZED_LIST = JSON.parse(localStorage.getItem('categorized-list')) || []
 let markedCategory = 0
 let categorizedTasksCount = 0
 let categorizedTasksCompleted = 0
@@ -73,7 +71,6 @@ UNCATEGORIZED_LIST.tasks.forEach(listItem => {
     li.id = listItem.id
     if(listItem.marked) {
         li.classList.add('marked')
-        ++uncategorizedTasksCompleted
     }
     li.innerHTML = `
                         <div class="radio-btn"></div>
@@ -88,7 +85,7 @@ UNCATEGORIZED_LIST.tasks.forEach(listItem => {
     const radioBtn = li.querySelector('.radio-btn')
     radioBtn.addEventListener('click', function(e) { markListItem(e, li, listItem.id) })
 
-    uncategorizedListProgress.innerText = `${uncategorizedTasksCompleted}/${UNCATEGORIZED_LIST.tasks.length} completed`
+    uncategorizedListProgress.innerText = `${UNCATEGORIZED_LIST.completedTasks}/${UNCATEGORIZED_LIST.tasks.length} completed`
     toggleFooter(uncategorizedList)
 })
 
@@ -276,10 +273,10 @@ function markListItem(e, listItem, id) {
             break
 
         case 'uncategorized':
-            isMarked ? ++uncategorizedTasksCompleted : --uncategorizedTasksCompleted
-            const task = UNCATEGORIZED_LIST.tasks.find(listItem => listItem.id == id)
-            task.marked = isMarked
-            uncategorizedListProgress.innerText = `${uncategorizedTasksCompleted}/${uncategorizedTasksCount} completed`
+            isMarked ? ++UNCATEGORIZED_LIST.completedTasks : --UNCATEGORIZED_LIST.completedTasks
+            UNCATEGORIZED_LIST.tasks.find(listItem => listItem.id == id).marked = isMarked
+
+            uncategorizedListProgress.innerText = `${UNCATEGORIZED_LIST.completedTasks}/${UNCATEGORIZED_LIST.tasks.length} completed`
             break
         
     }
@@ -314,12 +311,11 @@ function deleteRow(e, listItem, id) {
             break
 
         case 'uncategorized': {
-            isMarked ? --uncategorizedTasksCompleted : 'do nothing'
+            isMarked ? --UNCATEGORIZED_LIST.completedTasks : 'do nothing'
             const updatedTasks = UNCATEGORIZED_LIST.tasks.filter(task => task.id != id)
             
             UNCATEGORIZED_LIST.tasks = updatedTasks
-            uncategorizedTasksCount = UNCATEGORIZED_LIST.tasks.length
-            uncategorizedListProgress.innerText = `${uncategorizedTasksCompleted}/${uncategorizedTasksCount} completed`
+            uncategorizedListProgress.innerText = `${UNCATEGORIZED_LIST.completedTasks}/${UNCATEGORIZED_LIST.tasks.length} completed`
             break
         }
 
@@ -447,18 +443,12 @@ function createTasks() {
             
             // push newly created task to the uncategorized list
             UNCATEGORIZED_LIST.tasks.push(newTask)
-            uncategorizedTasksCount = UNCATEGORIZED_LIST.tasks.length
 
-            uncategorizedListProgress.innerText = `${uncategorizedTasksCompleted}/${uncategorizedTasksCount} completed`
+            uncategorizedListProgress.innerText = `${UNCATEGORIZED_LIST.completedTasks}/${UNCATEGORIZED_LIST.tasks.length} completed`
             toggleFooter(uncategorizedList)
             break
     }
 }
-
-// upate progress length in categorzed_tasks panel DONE
-// update tasks COUNT in categorized panel DONE
-// load tasks from clicked category DONE
-// update progress COUNT in categorzed_tasks panel by clicking radio btn when after refresh DONE
 
 // update tasks count of specific category from categorized list
 function updateCategorizedTaskCount() {
@@ -495,3 +485,11 @@ function showCategoryList() {
     uncategorizedBtn.style.backgroundColor = 'rgba(255, 255, 255, 0.3)'
     categorizedBtn.style.backgroundColor = 'white'
 }
+
+
+/*
+    upate progress length in categorzed_tasks panel DONE
+    update tasks COUNT in categorized panel DONE
+    load tasks from clicked category DONE
+    update progress COUNT in categorzed_tasks panel by clicking radio btn when after refresh DONE
+*/
