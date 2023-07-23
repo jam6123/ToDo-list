@@ -21,7 +21,7 @@ const uncategorizedListProgress = uncategorizedList.parentElement.querySelector(
 const UNCATEGORIZED_LIST = JSON.parse(localStorage.getItem('uncategorized-list')) || {completedTasks: 0, tasks: []}
 let uncategorizedTasksCompleted
 
-const CATEGORIZED_LIST = JSON.parse(localStorage.getItem('categorized-list')) || []
+let CATEGORIZED_LIST = JSON.parse(localStorage.getItem('categorized-list')) || []
 let markedCategory = 0
 let categorizedTasksCount = 0
 let categorizedTasksCompleted = 0
@@ -386,7 +386,7 @@ function deleteCurrentList(e) {
     if(list.parentElement.classList.contains('list-categorized')) {
         categorizedList.innerHTML = ''
         markedCategory = 0
-        CATEGORIZED_LIST.length = 0
+        CATEGORIZED_LIST = []
     
     }else if(list.parentElement.classList.contains('list-categorized-tasks')) {
         categorizedTasksList.innerHTML = ''
@@ -488,11 +488,3 @@ function showCategoryList() {
     uncategorizedBtn.style.backgroundColor = 'rgba(255, 255, 255, 0.3)'
     categorizedBtn.style.backgroundColor = 'white'
 }
-
-
-/*
-    upate progress length in categorzed_tasks panel DONE
-    update tasks COUNT in categorized panel DONE
-    load tasks from clicked category DONE
-    update progress COUNT in categorzed_tasks panel by clicking radio btn when after refresh DONE
-*/
