@@ -17,7 +17,6 @@ const categorizedTasksListProgress = categorizedTasksList.parentElement.querySel
 const tasksCategory = document.querySelector('.tasks-category')
 
 const uncategorizedList = document.querySelector('.list-uncategorized .list')
-console.log(uncategorizedList)
 
 const categorizedListExistingData = JSON.parse(localStorage.getItem('categorized-list'))
 let CATEGORIZED_LIST = categorizedListExistingData || []
@@ -38,7 +37,12 @@ CATEGORIZED_LIST.forEach(list => {
         li.classList.add('marked')
         ++completedCategory
     }
-    li.innerHTML = `
+    li.innerHTML = `    <button class="edit-btn">Edit</button>
+                        <button class="ok-btn">Ok</button>
+                        <div class="editing-area">
+                            <input>
+                            <button class="cancel-btn">Cancel</button>
+                        </div>
                         <div class="radio-btn"></div>
                             <p>${list.category}</p>
                             <div class="trash-icon">
@@ -48,6 +52,9 @@ CATEGORIZED_LIST.forEach(list => {
                     `;
     li.addEventListener('click', function(){ showCategoryTasksList(categorizedList, list.category, li)})
     
+    const editBtn = li.querySelector('.edit-btn')
+    editBtn.addEventListener('click', function(e){ edit(e, li, editBtn) })
+
     const trashIconBtn = li.querySelector('.trash-icon')
     trashIconBtn.addEventListener('click', function(e){ deleteRow(e, li, list.id) })
 
@@ -90,14 +97,21 @@ function addNewCategory() {
     li.classList.add('list__item')
     li.id = id
     li.innerHTML = `
+                        <button class="edit-btn">Edit</button>
+                        <button class="ok-btn">Ok</button>
+                        <div class="editing-area">
+                            <input>
+                            <button class="cancel-btn">Cancel</button>
+                        </div>
                         <div class="radio-btn"></div>
                             <p>${category}</p>
-                            <div class="trash-icon">
-                                ${trashIcon}
-                            </div>
+                            <div class="trash-icon">${trashIcon}</div>
                         <strong class="tasks-count">${0} tasks</strong>
                     `;
     li.addEventListener('click', function(){ showCategoryTasksList(categorizedList, category, li) })
+
+    const editBtn = li.querySelector('.edit-btn')
+    editBtn.addEventListener('click', function(e){ edit(e, li, editBtn) })
 
     const trashIconBtn = li.querySelector('.trash-icon')
     trashIconBtn.addEventListener('click', function(e){ deleteRow(e, li, id) })
@@ -117,6 +131,50 @@ function addNewCategory() {
 
     categorizedListProgress.innerText = `${completedCategory}/${CATEGORIZED_LIST.length} completed`
     toggleFooter(categorizedList) 
+}
+
+// edit category
+function edit(e, listItem, editBtn) {
+    e.stopPropagation()
+    editBtn.classList.add('hidden')
+    const okBtn = listItem.querySelector('.ok-btn')
+    const editingArea = listItem.querySelector('.editing-area')
+    const cancelBtn = editingArea.querySelector('.cancel-btn') 
+    const input = editingArea.querySelector('.editing-area input')
+    const p = listItem.querySelector('p')
+
+    input.value = p.innerText
+
+    cancelBtn.addEventListener('click', function(e){ cancelEdit(e, editBtn, okBtn, editingArea) })
+    okBtn.addEventListener('click', function(e){ updateEdit(e, input.value, p, editBtn, editingArea, okBtn, cancelBtn, listItem) })
+    okBtn.classList.add('revealed')
+
+    editingArea.classList.add('revealed')
+    editingArea.addEventListener('click', function(e){ e.stopPropagation() })
+
+
+}
+
+// cancel edit
+function cancelEdit(e, editBtn, okBtn, editingArea) {
+    editBtn.classList.remove('hidden')
+    okBtn.classList.remove('revealed')
+    editingArea.classList.remove('revealed')
+}
+
+// update edited category 
+ function updateEdit(e, newValue, p, editBtn, editingArea, okBtn, cancelBtn, listItem) {
+    e.stopPropagation()
+    if(newValue.trim().length == 0) return;
+
+    p.innerText = newValue
+    editBtn.classList.remove('hidden')
+    okBtn.classList.remove('revealed')
+    editingArea.classList.remove('revealed')
+
+    const foundListItem = CATEGORIZED_LIST.find(list => list.id == listItem.id)
+    foundListItem.category = newValue
+    updateLocalStorage()
 }
 
 // show or navigate to category list's tasks if it has
@@ -147,7 +205,7 @@ function loadCagtegoryTasks() {
             li.classList.add('marked')
             ++completedCategoryTask
         }
-        li.innerHTML = `
+        li.innerHTML = `    
                             <div class="radio-btn"></div>
                             <p>${task.task}</p>
                             <div class="trash-icon">
@@ -365,7 +423,13 @@ function showUncategorizedList() {
     input.value = ''
     input.placeholder = 'add new task here'
     categorizedList.parentElement.style.display = 'none'
+    categorizedTasksList.parentElement.style.display = 'none'
     uncategorizedList.parentElement.style.display = 'flex'
+    categorizedBtn.style.backgroundColor = 'rgba(255, 255, 255, 0.3)'
+    uncategorizedBtn.style.backgroundColor = 'white'
+    categorizedBtn.style.color = 'var(--primary-clr)'
+
+    removeLoadedTaskAndInfo()
 }
 
 // show the categorized list
@@ -377,4 +441,6 @@ function showCategoryList() {
     input.placeholder = 'what is it about?'
     categorizedList.parentElement.style.display = 'flex'
     uncategorizedList.parentElement.style.display = 'none'
+    uncategorizedBtn.style.backgroundColor = 'rgba(255, 255, 255, 0.3)'
+    categorizedBtn.style.backgroundColor = 'white'
 }
