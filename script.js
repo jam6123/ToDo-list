@@ -18,10 +18,10 @@ const tasksCategory = document.querySelector('.tasks-category')
 
 const uncategorizedList = document.querySelector('.list-uncategorized .list')
 const uncategorizedListProgress = uncategorizedList.parentElement.querySelector('.progress')
-let UNCATEGORIZED_LIST = JSON.parse(localStorage.getItem('uncategorized-list')) || {completedTasks: 0, tasks: []}
+const UNCATEGORIZED_LIST = JSON.parse(localStorage.getItem('uncategorized-list')) || {completedTasks: 0, tasks: []}
 let uncategorizedTasksCompleted
 
-let CATEGORIZED_LIST = JSON.parse(localStorage.getItem('categorized-list')) || []
+const CATEGORIZED_LIST = JSON.parse(localStorage.getItem('categorized-list')) || []
 let markedCategory = 0
 let categorizedTasksCount = 0
 let categorizedTasksCompleted = 0
@@ -385,18 +385,21 @@ function deleteCurrentList(e) {
 
     if(list.parentElement.classList.contains('list-categorized')) {
         categorizedList.innerHTML = ''
-        CATEGORIZED_LIST = []
         markedCategory = 0
+        CATEGORIZED_LIST.length = 0
     
     }else if(list.parentElement.classList.contains('list-categorized-tasks')) {
         categorizedTasksList.innerHTML = ''
         categorizedTasksCount = 0
         categorizedTasksCompleted = 0
         const category = CATEGORIZED_LIST.find(category => category.id == lastVisitedCategory.id)
-        category.tasksList.tasks = []
         category.tasksList.completedTasks = 0
+        category.tasksList.tasks = []
         
     }else if(list.parentElement.classList.contains('list-uncategorized')) {
+        uncategorizedList.innerHTML = ''
+        UNCATEGORIZED_LIST.completedTasks = 0
+        UNCATEGORIZED_LIST.tasks = []
 
     }
     updateLocalStorage()

@@ -180,7 +180,7 @@ span {
     font-style: italic;
     font-weight: normal;
     font-size: 1.17rem;
-    margin-bottom: 0;
+    margin-bottom: 0f;
     color: black;
     cursor: default;
     background-color: transparent;
@@ -290,6 +290,10 @@ nav .nav__btn {
 
 .edit-btn.hidden {
     display: none;    
+}
+
+.edit-btn:hover {
+    opacity: .3;
 }
 
 .ok-btn {
