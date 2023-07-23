@@ -69,7 +69,6 @@ CATEGORIZED_LIST.forEach(list => {
 form.addEventListener('submit', function(e) {
     e.preventDefault()
     addNewTodos()
-    
 })
 
 // add new to Dos
@@ -82,6 +81,9 @@ function addNewTodos() {
             break
         case 'categorized_tasks':
             createCategoryTasks()
+            break
+        case 'uncategorized':
+            createUncategorizedTasks()
             break
     }
 
@@ -399,6 +401,11 @@ function createCategoryTasks() {
     updateCategoryTasksCount()
     updateLocalStorage()
     toggleFooter(categorizedTasksList)
+}
+
+// create uncategorized tasks
+function createUncategorizedTasks() {
+    
 }
 
 // upate progress length in categorzed_tasks panel DONE
