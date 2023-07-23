@@ -11,10 +11,10 @@ I just tried to make this to practice what I've learnt so far. I tried my own ve
 ![](/screenshots/Screenshot3.png)
 
 ## Features
-**User can create tasks.** <br/>
-**User can edit category.** <br/>
-**User can mark done tasks.** <br/>
-**User can delete tasks.** <br/>
-**Saves tasks on browser's storage.** <br/>
-**Shows tasks count and completed tasks.** <br/>
+ - **User can create tasks.**
+ - **User can edit category.** 
+ - **User can mark done tasks.**
+ - **User can delete tasks.** <br/>
+ - **Saves tasks on browser's storage.** 
+ - **Shows tasks count and completed tasks.**
 ### That's all thanks
