@@ -18,24 +18,24 @@ const tasksCategory = document.querySelector('.tasks-category')
 
 const uncategorizedList = document.querySelector('.list-uncategorized .list')
 const uncategorizedListProgress = uncategorizedList.parentElement.querySelector('.progress')
-let UNCATEGORIZED_LIST = JSON.parse(localStorage.getItem('uncategorized-list')) || []
-let uncategorizedTaskCount = 0
-let uncategorizedCompletedTask = 0
+let UNCATEGORIZED_LIST = JSON.parse(localStorage.getItem('uncategorized-list')) || {completedTasks: 0, tasks: []}
+let uncategorizedTasksCount = 0
+let uncategorizedTasksCompleted = 0
 
 const categorizedListExistingData = JSON.parse(localStorage.getItem('categorized-list'))
 let CATEGORIZED_LIST = categorizedListExistingData || []
 let markedCategory = 0
-let categorizedTaskCount = 0
-let categorizedCompletedTask = 0
+let categorizedTasksCount = 0
+let categorizedTasksCompleted = 0
 let lastVisitedCategory = null
 
-// load/read existing category list from local storage
-CATEGORIZED_LIST.forEach(list => {
+// load/read existing categorized list from the local storage
+CATEGORIZED_LIST.forEach(category => {
     const li = document.createElement('li')
     categorizedList.appendChild(li)
     li.classList.add('list__item')
-    li.id = list.id
-    if(list.completed) {
+    li.id = category.id
+    if(category.completed) {
         li.classList.add('marked')
         ++markedCategory
     }
@@ -46,25 +46,51 @@ CATEGORIZED_LIST.forEach(list => {
                             <button class="cancel-btn">Cancel</button>
                         </div>
                         <div class="radio-btn"></div>
-                            <p>${list.category}</p>
+                            <p>${category.category}</p>
                             <div class="trash-icon">${trashIcon}</div>
-                        <strong class="tasks-count">${list.tasksList.tasks.length} tasks</strong>
+                        <strong class="tasks-count">${category.tasksList.tasks.length} tasks</strong>
                     `;
-    li.addEventListener('click', function(){ showCategoryTasksList(list.category, li)})
+    li.addEventListener('click', function(){ showCategoryTasksList(category.category, li)})
     
     const editBtn = li.querySelector('.edit-btn')
     editBtn.addEventListener('click', function(e){ edit(e, li, editBtn) })
 
     const trashIconBtn = li.querySelector('.trash-icon')
-    trashIconBtn.addEventListener('click', function(e){ deleteRow(e, li, list.id) })
+    trashIconBtn.addEventListener('click', function(e){ deleteRow(e, li, category.id) })
 
     const radioBtn = li.querySelector('.radio-btn')
-    radioBtn.addEventListener('click', function(e) { markListItem(e, li, list.id) })
+    radioBtn.addEventListener('click', function(e) { markListItem(e, li, category.id) })
 
     categorizedListProgress.innerText = `${markedCategory}/${CATEGORIZED_LIST.length} completed`
     toggleFooter(categorizedList)
 })
 
+// load/read existing uncategorized list from the local storage
+UNCATEGORIZED_LIST.tasks.forEach(listItem => {
+    const li = document.createElement('li')
+    uncategorizedList.appendChild(li)
+    li.classList.add('list__item')
+    li.id = listItem.id
+    if(listItem.marked) {
+        li.classList.add('marked')
+        ++uncategorizedTasksCompleted
+    }
+    li.innerHTML = `
+                        <div class="radio-btn"></div>
+                        <p>${listItem.task}</p>
+                        <div class="trash-icon">
+                            ${trashIcon}
+                        </div>
+                    `;
+    const trashIconBtn = li.querySelector('.trash-icon')
+    trashIconBtn.addEventListener('click', function(e){ deleteRow(e, li, listItem.id) })
+
+    const radioBtn = li.querySelector('.radio-btn')
+    radioBtn.addEventListener('click', function(e) { markListItem(e, li, listItem.id) })
+
+    uncategorizedListProgress.innerText = `${uncategorizedTasksCompleted}/${UNCATEGORIZED_LIST.tasks.length} completed`
+    toggleFooter(uncategorizedList)
+})
 
 form.addEventListener('submit', function(e) {
     e.preventDefault()
@@ -203,7 +229,7 @@ function loadCagtegoryTasks() {
         li.id = task.id
         if(task.marked) {
             li.classList.add('marked')
-            ++categorizedCompletedTask
+            ++categorizedTasksCompleted
         }
         li.innerHTML = `    
                             <div class="radio-btn"></div>
@@ -218,69 +244,88 @@ function loadCagtegoryTasks() {
         const radioBtn = li.querySelector('.radio-btn')
         radioBtn.addEventListener('click', function(e) { markListItem(e, li, task.id) })
 
-        categorizedTaskCount = category.tasksList.tasks.length
-        categorizedTasksListProgress.innerText = `${categorizedCompletedTask}/${categorizedTaskCount} completed`
+        categorizedTasksCount = category.tasksList.tasks.length
+        categorizedTasksListProgress.innerText = `${categorizedTasksCompleted}/${categorizedTasksCount} completed`
     })
 }
 
 // mark/outline list item
-function markListItem(e, li, id) {
+function markListItem(e, listItem, id) {
     e.stopPropagation()
-    li.classList.toggle('marked')
-    const isMarked = li.classList.contains('marked')
+    listItem.classList.toggle('marked')
+    const isMarked = listItem.classList.contains('marked')
+
     switch(form.dataset.currentList) {
         case 'categorized': {
             isMarked ? ++markedCategory  : --markedCategory
-            const foundIndex = CATEGORIZED_LIST.findIndex(list => list.id == id)
-            CATEGORIZED_LIST[foundIndex].completed = isMarked
+            const category = CATEGORIZED_LIST.find(category => category.id == id)
+            category.completed = isMarked
             categorizedListProgress.innerText = `${markedCategory}/${CATEGORIZED_LIST.length} completed`
-            updateLocalStorage()
             break
         }
-        case 'categorized_tasks':   {
-            isMarked ? ++categorizedCompletedTask  : --categorizedCompletedTask
-            const category = CATEGORIZED_LIST.find(list => list.id == lastVisitedCategory.id)
+
+        case 'categorized_tasks':   
+            isMarked ? ++categorizedTasksCompleted  : --categorizedTasksCompleted
+            const category = CATEGORIZED_LIST.find(category => category.id == lastVisitedCategory.id)
             const tasks = category.tasksList.tasks
             tasks.find(task => task.id == id).marked = isMarked
-            CATEGORIZED_LIST.find(category => category.id == lastVisitedCategory.id).tasksList.completedTasks = categorizedCompletedTask
+            CATEGORIZED_LIST.find(category => category.id == lastVisitedCategory.id).tasksList.completedTasks = categorizedTasksCompleted
 
-            categorizedTasksListProgress.innerText = `${categorizedCompletedTask}/${categorizedTaskCount} completed`
+            categorizedTasksListProgress.innerText = `${categorizedTasksCompleted}/${categorizedTasksCount} completed`
             updateCategorizedTaskCount()
-            updateLocalStorage()
             break
-        }   
-    }
 
+        case 'uncategorized':
+            isMarked ? ++uncategorizedTasksCompleted : --uncategorizedTasksCompleted
+            const task = UNCATEGORIZED_LIST.tasks.find(listItem => listItem.id == id)
+            task.marked = isMarked
+            uncategorizedListProgress.innerText = `${uncategorizedTasksCompleted}/${uncategorizedTasksCount} completed`
+            break
+        
+    }
+    updateLocalStorage()
     
 }
 
 // delete row
 function deleteRow(e, listItem, id) {
     e.stopPropagation()
-    const list = listItem.parentElement
-    list.removeChild(listItem)
+    const currentList = listItem.parentElement
+    currentList.removeChild(listItem)
     const isMarked = listItem.classList.contains('marked')
 
     switch(form.dataset.currentList) {
         case 'categorized':
             isMarked ? --markedCategory : 'do nothing'
-            CATEGORIZED_LIST = CATEGORIZED_LIST.filter(list => list.id != id)
+            CATEGORIZED_LIST = CATEGORIZED_LIST.filter(category => category.id != id)
             categorizedListProgress.innerText = `${markedCategory}/${CATEGORIZED_LIST.length} completed`
-            updateLocalStorage()
             break
+
         case 'categorized_tasks':
-            isMarked ? --categorizedCompletedTask : 'do nothing'
-            const category = CATEGORIZED_LIST.find(list => list.id == lastVisitedCategory.id)
+            isMarked ? --categorizedTasksCompleted : 'do nothing'
+            const category = CATEGORIZED_LIST.find(category => category.id == lastVisitedCategory.id)
             const tasks = category.tasksList.tasks
             const updatedTasks = tasks.filter(task => task.id != id)
+
             category.tasksList.tasks = updatedTasks
-            categorizedTaskCount = updatedTasks.length
-            categorizedTasksListProgress.innerText = `${categorizedCompletedTask}/${categorizedTaskCount} completed`
+            categorizedTasksCount = updatedTasks.length
+            categorizedTasksListProgress.innerText = `${categorizedTasksCompleted}/${categorizedTasksCount} completed`
             updateCategorizedTaskCount()
-            updateLocalStorage()
             break
+
+        case 'uncategorized': {
+            isMarked ? --uncategorizedTasksCompleted : 'do nothing'
+            const updatedTasks = UNCATEGORIZED_LIST.tasks.filter(task => task.id != id)
+            
+            UNCATEGORIZED_LIST.tasks = updatedTasks
+            uncategorizedTasksCount = UNCATEGORIZED_LIST.tasks.length
+            uncategorizedListProgress.innerText = `${uncategorizedTasksCompleted}/${uncategorizedTasksCount} completed`
+            break
+        }
+
     }
-    toggleFooter(list)
+    updateLocalStorage()
+    toggleFooter(currentList)
 }
 
 // clear input 
@@ -303,8 +348,8 @@ backBtn.addEventListener('click', function() {
 // remove loaded task and it's info after heading back
 function removeLoadedTaskAndInfo() {
     categorizedTasksList.innerHTML = ''
-    categorizedCompletedTask = 0
-    categorizedTaskCount = 0   
+    categorizedTasksCompleted = 0
+    categorizedTasksCount = 0   
 }
 
 // hide list-footer elements 
@@ -323,17 +368,15 @@ function updateLocalStorage() {
         case 'categorized':
         case 'categorized_tasks':
             localStorage.setItem('categorized-list', JSON.stringify(CATEGORIZED_LIST))
-            // localStorage.setItem('categorized-list_completed', markedCategory)
+            CATEGORIZED_LIST.length == 0 ? localStorage.removeItem('categorized-list') : 'do nothing'
             break
+
         case 'uncategorized':
             localStorage.setItem('uncategorized-list', JSON.stringify(UNCATEGORIZED_LIST))
+            UNCATEGORIZED_LIST.tasks.length == 0 ? localStorage.removeItem('uncategorized-list') : 'do nothing'
             break
     }
 
-    if(CATEGORIZED_LIST.length == 0) {
-        localStorage.removeItem('categorized-list')
-        localStorage.removeItem('categorized-list_completed')
-    }
 }
 
 // delete or empty the current list
@@ -348,16 +391,19 @@ function deleteCurrentList(e) {
         categorizedList.innerHTML = ''
         CATEGORIZED_LIST = []
         markedCategory = 0
-        localStorage.removeItem('categorized-list')
-        localStorage.removeItem('categorized-list_completed')
     
     }else if(list.parentElement.classList.contains('list-categorized-tasks')) {
         categorizedTasksList.innerHTML = ''
-        CATEGORIZED_LIST.find(category => category.id == lastVisitedCategory.id).tasksList.tasks = []
+        categorizedTasksCount = 0
+        categorizedTasksCompleted = 0
+        const category = CATEGORIZED_LIST.find(category => category.id == lastVisitedCategory.id)
+        category.tasksList.tasks = []
+        category.tasksList.completedTasks = 0
         
     }else if(list.parentElement.classList.contains('list-uncategorized')) {
 
     }
+    updateLocalStorage()
     toggleFooter(list)
 }
 
@@ -389,9 +435,9 @@ function createTasks() {
 
             // push newly created task to our current category's tasks
             category.tasksList.tasks.push(newTask)
-            categorizedTaskCount = category.tasksList.tasks.length
+            categorizedTasksCount = category.tasksList.tasks.length
             
-            categorizedTasksListProgress.innerText = `${categorizedCompletedTask}/${categorizedTaskCount} completed`
+            categorizedTasksListProgress.innerText = `${categorizedTasksCompleted}/${categorizedTasksCount} completed`
             updateCategorizedTaskCount()
             toggleFooter(categorizedTasksList)
             break
@@ -400,10 +446,10 @@ function createTasks() {
             uncategorizedList.appendChild(li)
             
             // push newly created task to the uncategorized list
-            UNCATEGORIZED_LIST.push(newTask)
-            uncategorizedTaskCount = UNCATEGORIZED_LIST.length
+            UNCATEGORIZED_LIST.tasks.push(newTask)
+            uncategorizedTasksCount = UNCATEGORIZED_LIST.tasks.length
 
-            uncategorizedListProgress.innerText = `${uncategorizedCompletedTask}/${uncategorizedTaskCount} completed`
+            uncategorizedListProgress.innerText = `${uncategorizedTasksCompleted}/${uncategorizedTasksCount} completed`
             toggleFooter(uncategorizedList)
             break
     }
@@ -417,7 +463,7 @@ function createTasks() {
 // update tasks count of specific category from categorized list
 function updateCategorizedTaskCount() {
     const taskCountElement = lastVisitedCategory.querySelector('.tasks-count')
-    taskCountElement.innerText = categorizedTaskCount + ' tasks.'
+    taskCountElement.innerText = categorizedTasksCount + ' tasks.'
 }
 
 // show the uncategorized list
