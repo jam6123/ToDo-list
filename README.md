@@ -1,5 +1,6 @@
 # ToDo-list
 I just tried to make this to practice what I've learnt so far. I tried my own version 😅. Hopes you like it.
+<br/>
 ![to do list app](/screenshots/Screenshot1.png)
 ![](/screenshots/Screenshot2.png)
 ![](/screenshots/Screenshot3.png)
