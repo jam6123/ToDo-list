@@ -23,7 +23,7 @@ body {
     background-repeat: no-repeat;
     height: 100vh;
     padding-top: 1px;
-    /* overflow: hidden; */
+    overflow: hidden;
 }
 
 button {
@@ -39,11 +39,12 @@ button {
 }
 
 form {
-    display: flex;
     margin-bottom: 10px;
     background-color: white;
     border-radius: 6px;
     overflow: hidden;
+    
+    display: flex;
 }
 
 input {
@@ -51,6 +52,7 @@ input {
     padding: 22px;
     border-radius: 5px 0 0 5px;
     font-size: 22px;
+    font-style: italic;
     font-weight: bold;
     color: black;
     flex: 1;
@@ -68,9 +70,14 @@ input::placeholder {
 
 .add-btn {
     padding: 0 28px;
-    color: var(--primary-clr);
+    margin: 4px;
+}
+
+.add-btn span {
     font-weight: bold;
     font-size: 26px;
+    color: var(--primary-clr);
+    transition: .1s ease-out;
 }
 
 .list-container {
@@ -83,32 +90,31 @@ input::placeholder {
     align-items: center;
     justify-content: center;
     flex-direction: column;
-
 }
 
-span {
+.empty-word {
     color: var(--gray-clr);
-    font-size: 1.5rem;
+    font-style: italic;
+    font-size: 1rem;
 }
 
 .nav {
+    border-radius: 6px 0 0 6px;
+    overflow: hidden;
+    translate: -97% 0;
+    
     position: absolute;
     left: 0;
     top: 0;
-    translate: -97% 0;
-    border-radius: 6px 0 0 6px;
-    overflow: hidden;
-    
 }
 
 .nav .nav__btn {
-    display: block;
-    padding: 20px 0;
     width: 225px;
-    color: var(--primary-clr);
+    padding: 20px 0;
     font-size: 1.1rem;
     background-color: white;
-
+    color: var(--primary-clr);
+    display: block;
 }
 
 
@@ -131,6 +137,7 @@ span {
 .list-categorized-tasks {
     display: none;
     padding-top: 20px;
+
     position: relative;
 
     z-index: 3;
@@ -138,6 +145,7 @@ span {
 
 .list-uncategorized {
     display: none;
+
     z-index: 1;
 }
 
@@ -156,17 +164,19 @@ span {
     padding-left: 197px;
     border-radius: 100%;
     background-color: transparent;
+    translate: -100% 0;
     
     position: absolute;
     top: 0;
     left: 0;
-    translate: -100% 0;
 }
 
 .back-btn:hover .fa-arrow-left--big,
-.nav__btn:hover h2 {
+.nav__btn:hover h2,
+.add-btn:hover span{
     opacity: .3;
 }
+
 
 .fa-arrow-left--big {
     transition: .1s ease-in-out;
@@ -256,10 +266,11 @@ nav .nav__btn {
     background-color: white;
     border-radius: 6px;
     display: none;
-    z-index: 1;
-
+    
     position: absolute;
     inset: 0;
+    
+    z-index: 1;
 }
 
 .editing-area input {
@@ -281,11 +292,12 @@ nav .nav__btn {
 .ok-btn{
     padding: 10px 0;
     background-color: transparent;
-    position: absolute;
-    translate: -124% 0;
     visibility: hidden;
     color: #b6b6b6;
     transition: all .5s ;
+    translate: -124% 0;
+
+    position: absolute;
 }
 
 .edit-btn.hidden {
@@ -308,14 +320,15 @@ nav .nav__btn {
 }
 
 .cancel-btn {
-    position: absolute;
-    bottom: 0;
-    right: 50%;
-    translate: 50% 50%;
-    color: gray;
     padding: 0 20px;
+    color: gray;
     background-color: white;
+    translate: 50% 50%;
     transition: .2s ease-out;
+    
+    position: absolute;
+    right: 50%;
+    bottom: 0;
 }
 
 .cancel-btn:hover {
@@ -326,18 +339,20 @@ nav .nav__btn {
     font-weight: normal;
     font-size: 12px;
     color: var(--primary-clr);
+
     position: absolute;
     right: 5px;
     bottom: 0;
 }
 
 .trash-icon {
+    cursor: pointer;
+    display: none;
+
     position: absolute;
     right: 10px;
     top: 10px;
-    cursor: pointer;
 
-    display: none;
 }
 
 .trash-icon:hover svg {
@@ -358,19 +373,20 @@ nav .nav__btn {
 }
 
 svg {
+    height: 1.4rem;
+    fill: red;
     transition: all .2s;
     display: block;
-    fill: red;
-    height: 1.4rem;
 }
 
 .radio-btn {
     padding-left: 20px;
     padding-right: 10px;
+    transform-origin: 60% 50%;
+
     display: flex;
     justify-content: center;
     align-items: center;
-    transform-origin: 60% 50%;
 
     position: relative;
     transition: all .2s ease-out;
