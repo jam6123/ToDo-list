@@ -1,5 +1,5 @@
 # ToDo-list
-I just tried to make this to practice what I've learnt so far. I tried my own version 😅. Hopes you like it. <br/>
+I just tried to make this to practice what I've learnt so far. I tried my own version :). Hopes you like it. <br/>
 Here: https://jam6123.github.io/ToDo-list/
 ## Screenshot 1
 ![to do list app](/screenshots/Screenshot1.png)
